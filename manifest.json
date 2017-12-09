@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "PeakController",
+  "short_name": "PeakController",
+  "description": "Use a Peak Guitar Hero controller to play a Yamaha QY100 via a UXC-16 Midi controller and LPK25 midi keyboard",
+  "version": "0.0.1",
+  "minimum_chrome_version": "38",
+
+  "permissions": ["hid",
+    {
+      "usbDevices": [
+        { "vendorId": 4794, "productId": 256 }
+      ]
+    }],
+
+  "icons": {
+    "16": "assets/icon_16.png",
+    "128": "assets/icon_128.png"
+  },
+
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}
