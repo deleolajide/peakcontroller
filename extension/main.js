@@ -74,21 +74,22 @@ window.onload = function()
         if (!output) output = WebMidi.getOutputByName("YAMAHA UX16 Port1"); // MAC
         
         input = WebMidi.getInputByName("LPK25");
-
-        output.playNote("C3");
-
-        input.addListener('noteon', "all", function (e)
+        
+        if (input && output)
         {
-            console.log("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
-            peak.innerHTML = e.note.name;
-            key = e.note.name;
-            base = e.note.number;
-        });
+            input.addListener('noteon', "all", function (e)
+            {
+                console.log("Received 'noteon' message (" + e.note.name + " " + e.note.name + e.note.octave + ").", e.note);
+                peak.innerHTML = e.note.name;
+                key = e.note.name;
+                base = e.note.number;
+            });
 
-        input.addListener('controlchange', "all", function (e)
-        {
-          //console.log("Received 'controlchange' message", e);
-        });
+            input.addListener('controlchange', "all", function (e)
+            {
+              //console.log("Received 'controlchange' message", e);
+            });
+        }
       }
 
     });    
@@ -96,9 +97,22 @@ window.onload = function()
 
 function update() 
 {
+    
     doChord();
     updateGame();
     updateCanvas();
+}
+
+function playChord(chord)
+{
+   if (GuitarCntl.buttonMap.strum.state == 15)  // released
+   {
+        output.stopNote(chord, 1, {velocity: 1}); 
+    
+   } else {
+        output.playNote(chord, 1, {duration: 1000, velocity: 1}); 
+   }
+
 }
 
 function doChord() 
@@ -110,7 +124,7 @@ function doChord()
   
   if (GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.orange.state && GuitarCntl.buttonMap.red.state)
   {
-    output.playNote([base - 36, base + 5, base + 9, base + 12], 1, {duration: 100, rawVelocity: true, velocity: 1}); 
+    playChord([base - 36, base + 5, base + 9, base + 12]); 
     peak.innerHTML = key + " - " + "F/C";
   } 
   else
@@ -119,7 +133,7 @@ function doChord()
   
   if (GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.orange.state && GuitarCntl.buttonMap.green.state)    
   {
-    output.playNote([base - 36, base + 7, base + 11, base + 14], 1, {duration: 100, rawVelocity: true, velocity: 1});
+    playChord([base - 36, base + 7, base + 11, base + 14]);
     peak.innerHTML = key + " - " + "G/C";
   } 
   else 
@@ -128,21 +142,21 @@ function doChord()
   
   if (GuitarCntl.buttonMap.red.state && GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.green.state)  
   {
-    output.playNote([base - 1, base + 3, base + 6], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base - 1, base + 3, base + 6]);  
     peak.innerHTML = key + " - " + "B";      
   }   
   else  
 
   if (GuitarCntl.buttonMap.red.state && GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.green.state)     // Ab
   {
-    output.playNote([base - 4, base, base + 3], 1, {duration: 100, rawVelocity: true, velocity: 1}); 
+    playChord([base - 4, base, base + 3]); 
     peak.innerHTML = key + " - " + "Ab";      
   }   
   else
   
   if (GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.green.state)     // E
   {
-    output.playNote([base + 4, base + 8, base + 11], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base + 4, base + 8, base + 11]);  
     peak.innerHTML = key + " - " + "E";      
   }   
   else 
@@ -150,119 +164,119 @@ function doChord()
  
   if (GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.red.state && GuitarCntl.buttonMap.orange.state)     // Am/G
   {
-    output.playNote([base - 29, base + 9, base + 12, base + 16], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base - 29, base + 9, base + 12, base + 16]);  
     peak.innerHTML = key + " - " + "Am/G";      
   }   
   else  
 
   if (GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.orange.state)    // F/G
   {
-    output.playNote([base - 29, base + 5, base + 9, base + 12], 1, {duration: 100, rawVelocity: true, velocity: 1}); 
+    playChord([base - 29, base + 5, base + 9, base + 12]); 
     peak.innerHTML = key + " - " + "F/G";
   }  
   else 
   
   if (GuitarCntl.buttonMap.red.state && GuitarCntl.buttonMap.yellow.state)     // Bb
   {
-    output.playNote([base - 2, base + 2, base + 5], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base - 2, base + 2, base + 5]);  
     peak.innerHTML = key + " - " + "Bb";      
   }    
   else
   
   if (GuitarCntl.buttonMap.green.state && GuitarCntl.buttonMap.yellow.state)     // Gsus
   {
-    output.playNote([base + 7, base + 12, base + 14], 1, {duration: 100, rawVelocity: true, velocity: 1});     
+    playChord([base + 7, base + 12, base + 14]);     
     peak.innerHTML = key + " - " + "Gsus4";      
   }    
   else
 
   if (GuitarCntl.buttonMap.orange.state && GuitarCntl.buttonMap.yellow.state)     // Csus
   {
-    output.playNote([base, base + 5, base + 7], 1, {duration: 100, rawVelocity: true, velocity: 1});   
+    playChord([base, base + 5, base + 7]);   
     peak.innerHTML = key + " - " + "Csus4";   
   }  
   else 
 
   if (GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state)    // C/E
   {
-    output.playNote([base - 32, base, base + 4, base + 7], 1, {duration: 100, rawVelocity: true, velocity: 1});
+    playChord([base - 32, base, base + 4, base + 7]);
     peak.innerHTML = key + " - " + "C/E";
   }  
   else
   
   if (GuitarCntl.buttonMap.green.state && GuitarCntl.buttonMap.red.state)     // G/B
   {
-    output.playNote([base - 25, base + 7, base + 11, base + 14], 1, {duration: 100, rawVelocity: true, velocity: 1});
+    playChord([base - 25, base + 7, base + 11, base + 14]);
     peak.innerHTML = key + " - " + "G/B";
   } 
   else
   
   if (GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.orange.state)     // F/A
   {
-    output.playNote([base - 27, base + 5, base + 9, base + 12], 1, {duration: 100, rawVelocity: true, velocity: 1});      
+    playChord([base - 27, base + 5, base + 9, base + 12]);      
     peak.innerHTML = key + " - " + "F/A";    
   }    
   else
   
   if (GuitarCntl.buttonMap.green.state && GuitarCntl.buttonMap.blue.state)     // Em
   {
-    output.playNote([base + 4, base + 7, base + 11], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base + 4, base + 7, base + 11]);  
     peak.innerHTML = key + " - " + "Em";     
   }    
   else 
  
    if (GuitarCntl.buttonMap.orange.state && GuitarCntl.buttonMap.red.state)   // Fm
    {
-     output.playNote([base + 5, base + 8, base + 12], 1, {duration: 100, rawVelocity: true, velocity: 1});   
+     playChord([base + 5, base + 8, base + 12]);   
      peak.innerHTML = key + " - " + "Fm";       
    }   
    else
    
    if (GuitarCntl.buttonMap.green.state && GuitarCntl.buttonMap.orange.state)     // Gm
    {
-     output.playNote([base + 7, base + 10, base + 14], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+     playChord([base + 7, base + 10, base + 14]);  
      peak.innerHTML = key + " - " + "Gm";       
    }  
   else
 
   if (GuitarCntl.buttonMap.red.state && GuitarCntl.buttonMap.blue.state)     // A
   {
-    output.playNote([base + 9, base + 13, base + 16], 1, {duration: 100, rawVelocity: true, velocity: 1}); 
+    playChord([base + 9, base + 13, base + 16]); 
     peak.innerHTML = key + " - " + "A";       
   }     
   else
     
   if (GuitarCntl.buttonMap.yellow.state)    // C
   {
-    output.playNote([base, base + 4, base + 7], 1, {duration: 100, rawVelocity: true, velocity: 1});
+    playChord([base, base + 4, base + 7]);
     peak.innerHTML = key + " - " + "C";      
   }
   else
   
   if (GuitarCntl.buttonMap.blue.state)      // Dm   
   {
-    output.playNote([base + 2, base + 5, base + 9], 1, {duration: 100, rawVelocity: true, velocity: 1});   
+    playChord([base + 2, base + 5, base + 9]);   
     peak.innerHTML = key + " - " + "Dm";       
   }  
   else
 
   if (GuitarCntl.buttonMap.orange.state)   // F
   {
-    output.playNote([base + 5, base + 9, base + 12], 1, {duration: 100, rawVelocity: true, velocity: 1});   
+    playChord([base + 5, base + 9, base + 12]);   
     peak.innerHTML = key + " - " + "F";       
   }   
   else
   
   if (GuitarCntl.buttonMap.green.state)     // G
   {
-    output.playNote([base + 7, base + 11, base + 14], 1, {duration: 100, rawVelocity: true, velocity: 1});  
+    playChord([base + 7, base + 11, base + 14]);  
     peak.innerHTML = key + " - " + "G";       
   }   
   else
 
   if (GuitarCntl.buttonMap.red.state)     // Am
   {
-    output.playNote([base + 9, base + 12, base + 16], 1, {duration: 100, rawVelocity: true, velocity: 1}); 
+    playChord([base + 9, base + 12, base + 16]); 
     peak.innerHTML = key + " - " + "Am";       
   }  
 
