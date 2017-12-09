@@ -71,7 +71,7 @@ window.onload = function()
         console.log("WebMidi enabled!");
 
         output = WebMidi.getOutputByName("Yamaha UX16-1");        
-        if (!output) output = WebMidi.getOutputByName("Yamaha UX16 Port1"); // MAC
+        if (!output) output = WebMidi.getOutputByName("YAMAHA UX16 Port1"); // MAC
         
         input = WebMidi.getInputByName("LPK25");
 
