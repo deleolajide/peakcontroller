@@ -4,6 +4,7 @@ var peak = null;
 var base = 60;
 var key = "C"
 var button = {};
+var started = false;
 
     
 var connect_obj = {
@@ -25,6 +26,7 @@ var game = null;
 window.onload = function() 
 {
   peak = document.querySelector('#peak');
+   
   
   chrome.hid.getDevices({}, function(devices) 
   {  
@@ -92,13 +94,13 @@ window.onload = function()
         }
       }
 
-    });    
+    }, false);    
 };
 
-function update() 
+function update(data) 
 {
     
-    doChord();
+    doChord(data);
     updateGame();
     updateCanvas();
 }
@@ -115,11 +117,33 @@ function playChord(chord)
 
 }
 
-function doChord() 
+function playSectionCheck()
+{
+  if (!GuitarCntl.buttonMap.yellow.state && !GuitarCntl.buttonMap.blue.state && !GuitarCntl.buttonMap.orange.state && !GuitarCntl.buttonMap.red.state  && !GuitarCntl.buttonMap.green.state)  
+  {
+    // beat change, no fret key pressed
+    
+    if (GuitarCntl.buttonMap.strum.state == 8)  // up
+    {   
+        console.log("advance beat section"); 
+        if (output) output.sendSysex(0x43, [126, 0, 9, 127]);
+    }
+    else
+
+    if (GuitarCntl.buttonMap.strum.state == 4)  // down
+    {   
+        console.log("repeat beat section");
+        if (output) output.sendSysex(0x43, [126, 0, 8, 127]);        
+    }      
+  } 
+}
+
+function doChord(data) 
 { 
   if (!GuitarCntl.buttonMap.strum.pressed) return;
   
-  
+  //playSectionCheck();
+      
   // --- F/C
   
   if (GuitarCntl.buttonMap.yellow.state && GuitarCntl.buttonMap.blue.state && GuitarCntl.buttonMap.orange.state && GuitarCntl.buttonMap.red.state)
@@ -280,8 +304,21 @@ function doChord()
     peak.innerHTML = key + " - " + "Am";       
   }  
 
-  
-  
+
+  if (data[19] == 132 && GuitarCntl.buttonMap.strum.state != 15)  // up or down
+  {    
+    if (started)
+    {
+        //console.log("stop pressed");     
+        if (output) output.sendStop();
+        started = false;
+    }
+    else {
+        //console.log("start pressed");    
+        if (output) output.sendStart();
+        started = true;
+    }
+  }
 }
 
 
@@ -340,7 +377,7 @@ function pollHid()
         {
           data = new Uint8Array(data);
           GuitarCntl.parseData(data);
-          update();
+          update(data);
         }
 
         setTimeout(pollHid, 0);

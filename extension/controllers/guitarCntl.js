@@ -23,6 +23,7 @@ var GuitarCntl = (function() {
       mainCntl.parseData(data);
       var fret = data[0];
       this.buttonMap.whammy = data[5];
+      this.buttonMap.overdrive = data[19];
       var state = data[6];
       
       mainCntl.mapButton(this.buttonMap.blue,      !!(fret&0x08));
@@ -30,7 +31,7 @@ var GuitarCntl = (function() {
       mainCntl.mapButton(this.buttonMap.red,       !!(fret&0x04));
       mainCntl.mapButton(this.buttonMap.yellow,    !!(fret&0x01));
       mainCntl.mapButton(this.buttonMap.orange,    !!(fret&0x10));
-      mainCntl.mapButton(this.buttonMap.overdrive, !!(fret&0x20));
+      //mainCntl.mapButton(this.buttonMap.overdrive, !!(fret&0x20));
       mainCntl.mapButton(this.buttonMap.highFrets, !!(fret&0x40));
       
       var strum = data[2];
